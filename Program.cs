@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using dotnetapi.Data;   // Make sure namespace matches your project
+using dotnetapi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +7,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// ✅ Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // React dev server
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 // Register MySQL DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -25,10 +37,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// ✅ Use CORS BEFORE Authorization
+app.UseCors("AllowReact");
 
 app.UseAuthorization();
 
-app.MapControllers();   // IMPORTANT: Enables Controller routing
+app.MapControllers();
 
 app.Run();
