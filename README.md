@@ -196,6 +196,3 @@ npm run build
 
 ---
 
-<div align="center">
-Made with ❤️ by Antigravity
-</div>
